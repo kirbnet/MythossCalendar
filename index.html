@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mythoss Calendar Translator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #2b2b2b;
+            color: #d8c49e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            background-image: url("https://www.transparenttextures.com/patterns/black-linen.png");
+        }
+        .card-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .card {
+            background-color: #3b3b3b;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            max-width: 600px;
+            width: 100%;
+            border: 3px solid #a38d68;
+            text-align: center;
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.1em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f5e4b7;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            font-size: 1.125rem;
+            color: #d1d5db;
+            margin-bottom: 2rem;
+        }
+        .label {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #9ca3af;
+        }
+        .input-card {
+            background-color: #4a4a4a;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+            border: 1px solid #6b6b6b;
+        }
+        .display-card {
+            background-color: #3b3b3b;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #6b6b6b;
+        }
+        .mythoss-card {
+            background-color: #6a5436;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #a38d68;
+        }
+        .display-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            color: #f5e4b7;
+        }
+        .mythoss-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            color: #f5e4b7;
+        }
+        #date-input {
+            background-color: #555555;
+            color: #d8c49e;
+            border-color: #a38d68;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+            transition: box-shadow 0.2s ease-in-out;
+            outline: none;
+            border: 1px solid #a38d68;
+        }
+        #date-input:focus {
+            box-shadow: 0 0 0 2px #f5e4b7;
+        }
+        #date-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+        .hidden {
+            display: none;
+        }
+        .mythoss-display-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .month-icon {
+            width: 48px;
+            height: 48px;
+        }
+        .month-icon path {
+            fill: #f5e4b7;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>What day is it on Mythoss?</h1>
+        <p class="subtitle">A translator from Earth to the world of Mythic Legions</p>
+
+        <div class="card-container">
+            <div class="mythoss-card">
+                <p class="label" style="color: #f5e4b7;">Mythoss Date</p>
+                <div class="mythoss-display-row">
+                    <div id="mythoss-icon" class="month-icon"></div>
+                    <div id="mythoss-date" class="mythoss-text"></div>
+                </div>
+            </div>
+            
+            <div id="leap-days-card" class="display-card hidden">
+                <p class="label">Leap Days</p>
+                <div id="leap-days" class="display-text"></div>
+            </div>
+
+            <div class="display-card">
+                <p class="label">Earth Date</p>
+                <input type="date" id="date-input">
+                <div id="gregorian-date" class="display-text"></div>
+            </div>
+            
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('date-input');
+            const gregorianDateEl = document.getElementById('gregorian-date');
+            const mythossDateEl = document.getElementById('mythoss-date');
+            const leapDaysCard = document.getElementById('leap-days-card');
+            const leapDaysEl = document.getElementById('leap-days');
+            const mythossIconEl = document.getElementById('mythoss-icon');
+
+            const MYTHOSS_MONTHS = [
+                'Leodar', 'Privadar', 'Castar', 'Wisadar', 'Ophidar',
+                'Blumdar', 'Calderar', 'Aquilar', 'Sturmadar', 'Granadar',
+                'Keldar', 'Cernadar', 'Moradar'
+            ];
+            
+            const MYTHOSS_DAYS = [
+                'Halsday','Selday', 'Mithday', 'Basday', 'Leesday', 'Zyday', 'Celesday',
+            ];
+
+            const MYTHOSS_MONTH_SVG_URLS = {
+                'Leodar': 'icons/Leodar.svg',
+                'Privadar': 'icons/Privadar.svg',
+                'Castar': 'icons/Castar.svg',
+                'Wisadar': 'icons/Wisadar.svg',
+                'Ophidar': 'icons/Ophidar.svg',
+                'Blumdar': 'icons/Blumdar.svg',
+                'Calderar': 'icons/Calderar.svg',
+                'Aquilar': 'icons/Aquilar.svg',
+                'Sturmadar': 'icons/Sturmadar.svg',
+                'Granadar': 'icons/Granadar.svg',
+                'Keldar': 'icons/Keldar.svg',
+                'Cernadar': 'icons/Cernadar.svg',
+                'Moradar': 'icons/Moradar.svg'
+            };
+
+            const MYTHOSS_SEASON_COLORS = [
+                '#94C973', // Spring (Months 0-2)
+                '#E57373', // Summer (Months 3-5)
+                '#F5B345', // Autumn (Months 6-8)
+                '#B0C4DE'  // Winter (Months 9-12)
+            ];
+
+            const getDayOfYear = (date) => {
+                const start = new Date(date.getFullYear(), 0, 0);
+                const diff = date - start;
+                const oneDay = 1000 * 60 * 60 * 24;
+                return Math.floor(diff / oneDay);
+            };
+
+            const formatGregorianDate = (date) => {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            };
+
+            const convertToMythoss = (date) => {
+                const dayOfYear = getDayOfYear(date);
+
+                if (dayOfYear > 364) {
+                    const leapDays = dayOfYear - 364;
+                    return { month: null, day: null, leapDays: leapDays };
+                }
+
+                const monthIndex = Math.floor((dayOfYear - 1) / 28);
+                const mythossMonth = MYTHOSS_MONTHS[monthIndex];
+                const mythossDay = ((dayOfYear - 1) % 28) + 1;
+
+                return {
+                    month: mythossMonth,
+                    day: mythossDay,
+                    leapDays: 0,
+                    monthIndex: monthIndex
+                };
+            };
+
+            const getSeasonColor = (monthIndex) => {
+                if (monthIndex >= 0 && monthIndex <= 2) return MYTHOSS_SEASON_COLORS[0]; // Leodar - Castar (Winter)
+                if (monthIndex >= 3 && monthIndex <= 5) return MYTHOSS_SEASON_COLORS[1]; // Wisadar - Blumdar (Spring)
+                if (monthIndex >= 6 && monthIndex <= 9) return MYTHOSS_SEASON_COLORS[2]; // Calderar - Granadar (Summer)
+                if (monthIndex >= 10 && monthIndex <= 12) return MYTHOSS_SEASON_COLORS[3]; // Keldar - Moradar (Autumn)
+                return 'white'; // Default fallback
+            };
+            
+            // New asynchronous function to fetch and process the SVG
+            const fetchSvgIcon = async (monthName) => {
+                try {
+                    const url = MYTHOSS_MONTH_SVG_URLS[monthName];
+                    const response = await fetch(url);
+                    const svgText = await response.text();
+                    return svgText;
+                } catch (error) {
+                    console.error('Error fetching SVG:', error);
+                    return ''; // Return an empty string on error
+                }
+            };
+
+            const updateDisplay = async (date) => {
+                gregorianDateEl.textContent = formatGregorianDate(date);
+
+                const mythoss = convertToMythoss(date);
+                
+                // Day of the week is 1-to-1 name change
+                const dayOfWeekIndex = date.getDay();
+                const mythossDayOfWeek = MYTHOSS_DAYS[dayOfWeekIndex];
+
+                if (mythoss.leapDays > 0) {
+                    mythossDateEl.textContent = 'N/A';
+                    leapDaysCard.classList.remove('hidden');
+                    leapDaysEl.textContent = `Day ${mythoss.leapDays}`;
+                    mythossIconEl.innerHTML = '';
+                } else {
+                    // Call the async function and wait for the SVG content
+                    const svgContent = await fetchSvgIcon(mythoss.month);
+                    const seasonColor = getSeasonColor(mythoss.monthIndex);
+                    
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(svgContent, 'image/svg+xml');
+                    const path = doc.querySelector('path');
+                    if (path) {
+                        path.setAttribute('fill', seasonColor);
+                    }
+                    mythossIconEl.innerHTML = doc.documentElement.outerHTML;
+                    mythossDateEl.textContent = `${mythossDayOfWeek}, Day ${mythoss.day} of ${mythoss.month}`;
+                    leapDaysCard.classList.add('hidden');
+                }
+            };
+
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            dateInput.value = `${year}-${month}-${day}`;
+
+            updateDisplay(today);
+
+            dateInput.addEventListener('change', (event) => {
+                const selectedDate = new Date(event.target.value + 'T00:00:00');
+                if (selectedDate instanceof Date && !isNaN(selectedDate)) {
+                    updateDisplay(selectedDate);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
