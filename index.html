@@ -192,10 +192,11 @@
             };
 
             const MYTHOSS_SEASON_COLORS = [
-                '#94C973', // Spring (Months 0-2)
-                '#E57373', // Summer (Months 3-5)
-                '#F5B345', // Autumn (Months 6-8)
-                '#B0C4DE'  // Winter (Months 9-12)
+                '#B0C4DE',  // Winter (Months 0-2)
+                '#94C973', // Spring (Months 3-5)
+                '#E57373', // Summer (Months 6-9)
+                '#F5B345' // Autumn (Months 10-12)
+                
             ];
 
             const getDayOfYear = (date) => {
@@ -282,6 +283,7 @@
                         svgElement.style.height = '100%';
 
                         // 2. Override the fill color by finding all shapes and setting their fill attribute
+                        svgElement.style.color = 'transparent';
                         const shapes = svgElement.querySelectorAll('path, circle, rect, polygon, ellipse');
                         shapes.forEach(shape => {
                             // Remove any existing fill or style attributes to ensure our new color is applied
@@ -292,7 +294,7 @@
                         
                         mythossIconEl.innerHTML = svgElement.outerHTML;
                     }
-                    
+
                     mythossDateEl.textContent = `${mythossDayOfWeek}, Day ${mythoss.day} of ${mythoss.month}`;
                     leapDaysCard.classList.add('hidden');
                 }
