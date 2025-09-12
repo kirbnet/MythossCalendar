@@ -272,11 +272,27 @@
                     
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(svgContent, 'image/svg+xml');
-                    const path = doc.querySelector('path');
-                    if (path) {
-                        path.setAttribute('fill', seasonColor);
+                    const svgElement = doc.querySelector('svg');
+                    
+                    if (svgElement) {
+                        // 1. Enforce sizing by removing attributes and setting CSS properties
+                        svgElement.removeAttribute('width');
+                        svgElement.removeAttribute('height');
+                        svgElement.style.width = '100%';
+                        svgElement.style.height = '100%';
+
+                        // 2. Override the fill color by finding all shapes and setting their fill attribute
+                        const shapes = svgElement.querySelectorAll('path, circle, rect, polygon, ellipse');
+                        shapes.forEach(shape => {
+                            // Remove any existing fill or style attributes to ensure our new color is applied
+                            shape.removeAttribute('fill');
+                            shape.removeAttribute('style');
+                            shape.setAttribute('fill', seasonColor);
+                        });
+                        
+                        mythossIconEl.innerHTML = svgElement.outerHTML;
                     }
-                    mythossIconEl.innerHTML = doc.documentElement.outerHTML;
+                    
                     mythossDateEl.textContent = `${mythossDayOfWeek}, Day ${mythoss.day} of ${mythoss.month}`;
                     leapDaysCard.classList.add('hidden');
                 }
