@@ -259,10 +259,10 @@
                 const mythossDayOfWeek = MYTHOSS_DAYS[dayOfWeekIndex];
 
                 if (mythoss.leapDays > 0) {
-                    mythossDateEl.textContent = 'N/A';
-                    leapDaysCard.classList.remove('hidden');
+                    //mythossDateEl.textContent = 'N/A';
+                    //leapDaysCard.classList.remove('hidden');
                     //  ${mythoss.leapDays} for the number of days. Maybe they have names.
-                    leapDaysEl.textContent = `The planets are out of sync. There is no moon. Only darkness.`;
+                    mythossDateEl.textContent = `The planets are out of sync. There is no moon. Only darkness.`;
                     mythossIconEl.innerHTML = '';
                 } else {
                     // Call the async function and wait for the SVG content
