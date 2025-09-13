@@ -198,24 +198,9 @@
 
             const getDayOfYear = (date) => {
                 const start = new Date(date.getFullYear(), 0, 0);
-                let startYear = date.getFullYear();
-
-                const mythossStart = new Date(startYear, 11, 21); // Dec 21st of the current year
-
-                // If the selected date is before Dec 21st, it belongs to the next Mythoss year.
-                if (date > mythossStart) {
-                    startYear += 1;
-                }
-                const mythossStartCorrected = new Date(startYear, 11, 21);
-
-                // Calculate the difference in days from the Mythoss year's start.
+                const diff = date - start;
                 const oneDay = 1000 * 60 * 60 * 24;
-                const diffTime = date.getTime() - mythossStartCorrected.getTime();
-                const diffDays = Math.ceil(diffTime / oneDay);
-
-                const dayOfMythossYear = diffDays + 1;
-
-                return dayOfMythossYear;
+                return Math.floor(diff / oneDay);
             };
 
             const formatGregorianDate = (date) => {
@@ -225,9 +210,6 @@
 
             // convertToMythoss will handle the exceptions/other calendar logic
             const convertToMythoss = (date) => {
-                // dayOfYear is just the number of the day, starting counting from Dec. 21
-                const dayOfYear = getDayOfYear(date);
-
                 const year = date.getFullYear();
                 const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
                 const feb29 = new Date(year, 1, 29);
@@ -236,15 +218,32 @@
                 if (isLeap && date.getMonth() === 1 && date.getDate() === 29) {
                     return { isEarthLeapDay: true };
                 } 
+
+                let startYear = year;
+                const mythossStart = new Date(startYear, 11, 21); 
+
+                // If the selected date is before Dec 21st, it belongs to the previous Mythoss year.
+                if (date < mythossStart) {
+                    startYear -= 1;
+                }
+                const mythossStartCorrected = new Date(startYear, 11, 21);
+                
+                // Calculate the difference in days from the Mythoss year's start.
+                const diffTime = date.getTime() - mythossStartCorrected.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                let dayOfMythossYear = diffDays + 1;
+
+
                 // Adjust for the Earth leap day, shifting the calendar back by one day
                 // for all dates that come after February 29th in a leap year.
                 if (isLeap && date > feb29) {
-                    dayOfYear -= 1;
+                    dayOfMythossYear -= 1;
                 }
 
                 // For the extra days of the year
                 if (dayOfYear > 364) {
-                    const leapDays = dayOfYear - 364;
+                    const leapDays = dayOfMythossYear - 364;
                     return { month: null, day: null, leapDays: leapDays, isEarthLeapDay: false };
                 }
 
