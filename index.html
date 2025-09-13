@@ -198,9 +198,24 @@
 
             const getDayOfYear = (date) => {
                 const start = new Date(date.getFullYear(), 0, 0);
-                const diff = date - start;
+                let startYear = date.getFullYear();
+
+                const mythossStart = new Date(startYear, 11, 21); // Dec 21st of the current year
+
+                // If the selected date is before Dec 21st, it belongs to the previous Mythoss year.
+                if (date < mythossStart) {
+                    startYear -= 1;
+                }
+                const mythossStartCorrected = new Date(startYear, 11, 21);
+
+                // Calculate the difference in days from the Mythoss year's start.
                 const oneDay = 1000 * 60 * 60 * 24;
-                return Math.floor(diff / oneDay);
+                const diffTime = date.getTime() - mythossStartCorrected.getTime();
+                const diffDays = Math.ceil(diffTime / oneDay);
+
+                const dayOfMythossYear = diffDays + 1;
+
+                return dayOfMythossYear;
             };
 
             const formatGregorianDate = (date) => {
