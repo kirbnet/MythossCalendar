@@ -247,9 +247,9 @@
                     return { month: null, day: null, leapDays: leapDays, isEarthLeapDay: false };
                 }
 
-                const monthIndex = Math.floor((dayOfYear - 1) / 28);
+                const monthIndex = Math.floor((dayOfMythossYear - 1) / 28);
                 const mythossMonth = MYTHOSS_MONTHS[monthIndex];
-                const mythossDay = ((dayOfYear - 1) % 28) + 1;
+                const mythossDay = ((dayOfMythossYear - 1) % 28) + 1;
 
                 return {
                     month: mythossMonth,
