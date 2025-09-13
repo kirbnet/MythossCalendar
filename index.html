@@ -213,6 +213,7 @@
                 const year = date.getFullYear();
                 const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
                 const feb29 = new Date(year, 1, 29);
+                const dec21 = new Date(year, 11, 21);
 
                 // Handle the Earth leap day 2/29 as a special case
                 if (isLeap && date.getMonth() === 1 && date.getDate() === 29) {
@@ -237,7 +238,7 @@
 
                 // Adjust for the Earth leap day, shifting the calendar back by one day
                 // for all dates that come after February 29th in a leap year.
-                if (isLeap && date > feb29) {
+                if (isLeap && date > feb29 && date < dec21) {
                     dayOfMythossYear -= 1;
                 }
 
