@@ -288,7 +288,8 @@
                 const mythoss = convertToMythoss(date);
                 
                 // Day of the week is 1-to-1 name change
-                const dayOfWeekIndex = date.getDay();
+                //const dayOfWeekIndex = date.getDay();
+                const dayOfWeekIndex = ((dayOfMythossYear - 1) % 7);
                 const mythossDayOfWeek = MYTHOSS_DAYS[dayOfWeekIndex];
 
                 if (mythoss.isEarthLeapDay) {
