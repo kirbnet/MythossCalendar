@@ -202,9 +202,9 @@
 
                 const mythossStart = new Date(startYear, 11, 21); // Dec 21st of the current year
 
-                // If the selected date is before Dec 21st, it belongs to the previous Mythoss year.
-                if (date < mythossStart) {
-                    startYear -= 1;
+                // If the selected date is before Dec 21st, it belongs to the next Mythoss year.
+                if (date > mythossStart) {
+                    startYear += 1;
                 }
                 const mythossStartCorrected = new Date(startYear, 11, 21);
 
